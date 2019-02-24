@@ -7,12 +7,15 @@
     <link rel="stylesheet" type="text/css" href="style.css"/>
 </head>
 <body>
+<a href="meals?action=create">Add meal</a>
 <table border="1" cellpadding="8" cellspacing="0">
     <thead>
     <tr>
         <td>Date</td>
         <td>Description</td>
         <td>Calories</td>
+        <td></td>
+        <td></td>
     </tr>
     </thead>
     <c:forEach items="${meals}" var="meal">
@@ -21,6 +24,8 @@
             <td>${fn:formatDateTime(meal.dateTime)}</td>
             <td>${meal.description}</td>
             <td>${meal.calories}</td>
+            <td><a href="meals?action=update&id=${meal.id}">Update</a></td>
+            <td><a href="meals?action=delete&id=${meal.id}">Delete</a></td>
         </tr>
     </c:forEach>
 </table>
