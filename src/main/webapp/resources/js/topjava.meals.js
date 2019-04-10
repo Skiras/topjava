@@ -26,10 +26,34 @@ $(function () {
                 "order": [
                     [
                         0,
-                        "asc"
+                        "desc"
                     ]
                 ]
             })
         }
     );
 });
+
+function filter() {
+    $.ajax({
+        type: "POST",
+        url: context.ajaxUrl + "filter",
+        data: $("#filerForm").serialize()
+    }).done(function (data) {
+        context.datatableApi.clear().rows.add(data).draw();
+        successNoty("Filtering");
+    });
+}
+
+function resetFilter() {
+    $.ajax({
+        type: "GET",
+        url: context.ajaxUrl
+    }).done(function (data) {
+        context.datatableApi.clear().rows.add(data).draw();
+        $("#startDate").val("");
+        $("#endDate").val("");
+        $("#startTime").val("");
+        $("#endTime").val("");
+    });
+}
