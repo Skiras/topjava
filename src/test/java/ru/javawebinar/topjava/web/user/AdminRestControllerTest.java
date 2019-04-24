@@ -111,6 +111,16 @@ class AdminRestControllerTest extends AbstractControllerTest {
     }
 
     @Test
+    void testCreateDuplicateEmail() throws Exception {
+        User expected = new User(null, "New", ADMIN.getEmail(), "newPass", 2300, Role.ROLE_USER, Role.ROLE_ADMIN);
+        mockMvc.perform(post(REST_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .with(userHttpBasic(ADMIN))
+                .content(jsonWithPassword(expected, "newPass")))
+                .andExpect(status().isConflict());
+    }
+
+    @Test
     void testCreateValidation() throws Exception {
         User expected = new User(null, "", "", "", 0, Role.ROLE_USER);
         mockMvc.perform(post(REST_URL)

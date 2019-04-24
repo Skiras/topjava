@@ -61,6 +61,16 @@ class ProfileRestControllerTest extends AbstractControllerTest {
     }
 
     @Test
+    void testRegisterEmailDuplication() throws Exception {
+        UserTo createdTo = new UserTo(null, "newName", ADMIN.getEmail(), "newPassword", 1500);
+
+        mockMvc.perform(post(REST_URL + "/register").contentType(MediaType.APPLICATION_JSON)
+                .content(JsonUtil.writeValue(createdTo)))
+                .andDo(print())
+                .andExpect(status().isConflict());
+    }
+
+    @Test
     void testUpdate() throws Exception {
         UserTo updatedTo = new UserTo(null, "newName", "newemail@ya.ru", "newPassword", 1500);
 

@@ -1,5 +1,7 @@
 package ru.javawebinar.topjava.web.user;
 
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -32,18 +34,27 @@ public class ProfileRestController extends AbstractUserController {
     @PostMapping(value = "/register", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(value = HttpStatus.CREATED)
     public ResponseEntity<User> register(@RequestBody UserTo userTo) {
-        User created = super.create(UserUtil.createNewFromTo(userTo));
-        URI uriOfNewResource = ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path(REST_URL + "/{id}")
-                .buildAndExpand(created.getId()).toUri();
+        try {
+            User created = super.create(UserUtil.createNewFromTo(userTo));
+            URI uriOfNewResource = ServletUriComponentsBuilder.fromCurrentContextPath()
+                    .path(REST_URL + "/{id}")
+                    .buildAndExpand(created.getId()).toUri();
 
-        return ResponseEntity.created(uriOfNewResource).body(created);
+            return ResponseEntity.created(uriOfNewResource).body(created);
+        } catch (DataIntegrityViolationException e) {
+            throw new DataIntegrityViolationException(messageSource.getMessage("user.mail.duplicate", null, LocaleContextHolder.getLocale()));
+        }
+
     }
 
     @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void update(@RequestBody UserTo userTo) {
-        super.update(userTo, authUserId());
+        try {
+            super.update(userTo, authUserId());
+        } catch (DataIntegrityViolationException e) {
+            throw new DataIntegrityViolationException(messageSource.getMessage("user.mail.duplicate", null, LocaleContextHolder.getLocale()));
+        }
     }
 
     @GetMapping(value = "/text")
